@@ -144,6 +144,93 @@ const description =
     </div>
   )}
 
+  <!-- 友链提交表单 -->
+  {friendsPageConfig.showSubmitForm && (
+  <div class="mt-4">
+    <div class="card-base px-9 py-6 rounded-xl">
+      <h2 class="text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
+        申请友链
+      </h2>
+      <p class="text-neutral-600 dark:text-neutral-400 mb-6">
+        请填写您的友链信息，我会在审核通过后添加到友链列表中。
+      </p>
+      
+      <form id="friendForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="title" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              您的站点名称
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              required
+              class="w-full px-3 py-2 border border-(--line-divider) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-neutral-600 dark:text-neutral-400 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+              placeholder="请输入您的站点名称"
+            />
+          </div>
+          <div>
+            <label for="siteurl" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              您的站点URL
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="url"
+              id="siteurl"
+              name="siteurl"
+              required
+              class="w-full px-3 py-2 border border-(--line-divider) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-neutral-600 dark:text-neutral-400 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+              placeholder="请输入您的站点URL"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label for="imgurl" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            您的站点头像URL
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="url"
+            id="imgurl"
+            name="imgurl"
+            required
+            class="w-full px-3 py-2 border border-(--line-divider) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-neutral-600 dark:text-neutral-400 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+            placeholder="请输入您的站点头像URL"
+          />
+        </div>
+        
+        <div>
+          <label for="desc" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            您的站点描述
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="desc"
+            name="desc"
+            required
+            class="w-full px-3 py-2 border border-(--line-divider) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-neutral-600 dark:text-neutral-400 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+            placeholder="请输入您的站点描述"
+          />
+        </div>
+        
+        <button
+          id="submitLinkBtn"
+          type="submit"
+          class="w-full bg-(--primary) text-white transition-colors duration-300 py-3 px-4 text-medium rounded-lg cursor-pointer hover:bg-(--btn-regular-bg-hover)"
+        >
+          提交申请
+        </button>
+      </form>
+      
+      <div id="formMessage" class="mt-4 hidden p-4 rounded-lg"></div>
+    </div>
+  </div>
+  )}
+
   <!-- 评论区 -->
   <div class="mt-4">
     <Comment post={friendsPost} customPath="/friends/" />
@@ -223,4 +310,68 @@ const description =
       gap: 0.75rem;
     }
   </style>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('friendForm');
+      const messageDiv = document.getElementById('formMessage');
+      const submitButton = document.getElementById('submitLinkBtn');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // 禁用提交按钮，添加冷却效果
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.style.cursor = 'not-allowed';
+          submitButton.textContent = '提交中...';
+        }
+        
+        const formData = new FormData(form);
+        const data = {
+          title: formData.get('title'),
+          siteurl: formData.get('siteurl'),
+          imgurl: formData.get('imgurl'),
+          desc: formData.get('desc'),
+        };
+        
+        try {
+          const response = await fetch('/api/submit-links/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok && result.success) {
+            messageDiv.textContent = result.message || '友链申请提交成功！我会尽快处理并添加。';
+            messageDiv.className = 'mt-4 p-3 rounded-lg bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+            form.reset();
+          } else {
+            messageDiv.textContent = result.message || '提交失败，请稍后重试。';
+            messageDiv.className = 'mt-4 p-3 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+          }
+        } catch (error) {
+          messageDiv.textContent = '网络错误，请检查连接后重试。';
+          messageDiv.className = 'mt-4 p-3 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+        } finally {
+          submitButton.textContent = '提交申请';
+          // 5秒后重新启用提交按钮
+          setTimeout(() => {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.style.cursor = 'pointer';
+            }
+          }, 5000);
+          setTimeout(() => {
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+          }, 10000);
+        }
+      });
+    });
+  </script>
 </MainGridLayout>

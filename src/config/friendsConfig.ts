@@ -1,9 +1,21 @@
 import type { FriendLink, FriendsPageConfig } from "../types/config";
 
+// 从JSON文件读取友链配置
+const readFriendsConfig = async () => {
+	const friendsJson = await import('./friendsLinks.json').then(m => JSON.stringify(m.default || m));
+	if (!friendsJson) {
+		return [];
+	}
+	return JSON.parse(friendsJson);
+};
+
 // 可以在src/content/spec/friends.md中编写友链页面下方的自定义内容
 
 // 友链页面配置
 export const friendsPageConfig: FriendsPageConfig = {
+	// 是否启用友链提交表单
+	showSubmitForm: true,
+
 	// 页面标题，如果留空则使用 i18n 中的翻译
 	title: "",
 
@@ -16,6 +28,7 @@ export const friendsPageConfig: FriendsPageConfig = {
 
 // 友链配置
 export const friendsConfig: FriendLink[] = [
+	...(await readFriendsConfig()),
 	{
 		title: "夏夜流萤",
 		imgurl: "https://q1.qlogo.cn/g?b=qq&nk=7618557&s=640",

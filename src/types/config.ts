@@ -610,6 +610,7 @@ export type FriendLink = {
 };
 
 export type FriendsPageConfig = {
+	showSubmitForm: boolean; // 是否启用友链提交表单
 	title?: string; // 页面标题，留空则使用 i18n 中的翻译
 	description?: string; // 页面描述，留空则使用 i18n 中的翻译
 	showCustomContent?: boolean; // 是否显示自定义内容（friends.mdx）
