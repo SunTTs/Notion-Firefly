@@ -158,7 +158,7 @@ async function getNotionPosts() {
       data_source_id: CONFIG.notionContentsDatabaseId,
       filter: {
         property: 'Status',
-        select: { equals: CONFIG.postsStatus }
+        status: { equals: "已发布" },
       },
       sorts: [{
           property: 'Published',
