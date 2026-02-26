@@ -1,283 +1,72 @@
-
-<img src="./docs/images/1131.png" width = "350" height = "500" alt="Firefly" align=right />
-
-<div align="center">
-
-# Firefly
-> A Fresh and Beautiful Astro Static Blog Theme Template
-> 
-> ![Node.js >= 22](https://img.shields.io/badge/node.js-%3E%3D22-brightgreen) 
-![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
-![Astro](https://img.shields.io/badge/Astro-5.17.2-orange)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
->
-> [![Stars](https://img.shields.io/github/stars/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/stargazers)
-[![Forks](https://img.shields.io/github/forks/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/network/members)
-[![Issues](https://img.shields.io/github/issues/CuteLeaf/Firefly)](https://github.com/CuteLeaf/Firefly/issues)
-> 
-> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z41NQALY)
->
-> **QQ交流群：[1087127207](https://qm.qq.com/q/ZGsFa8qX2G)**
-> 
-> ![GitHub License](https://img.shields.io/github/license/CuteLeaf/Firefly)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/CuteLeaf/Firefly)
-[![Afdian Sponsor](https://img.shields.io/badge/Afdian-Sponsor%20Author-ff69b4.svg)](https://afdian.com/a/cuteleaf)
-</div>
-
-
----
-📖 README:
-**[简体中文](README.zh.md)** | **[繁體中文](docs/README.zh-TW.md)** | **[English](README.md)** | **[日本語](docs/README.ja.md)** | **[Русский](docs/README.ru.md)** 
-
-🚀 Quick Guide:
-[**🖥️Live Demo**](https://firefly.cuteleaf.cn/) /
-[**📝Documentation**](https://docs-firefly.cuteleaf.cn/) /
-[**🍀My Blog**](https://blog.cuteleaf.cn)
-
-⚡ Static Site Generation: Ultra-fast loading speed and SEO optimization based on Astro
-
-🎨 Modern Design: Clean and beautiful interface with customizable theme colors
-
-📱 Mobile-Friendly: Perfect responsive experience with mobile-specific optimizations
-
-🔧 Highly Configurable: Most features can be customized through configuration files
-
-<img alt="firefly" src="./docs/images/1.webp" />
-<img alt="Lighthouse" src="./docs/images/Lighthouse.png" />
-
->[!TIP]
->Firefly is a fresh and beautiful personal blog theme template based on the Astro framework and the Fuwari template, designed for tech enthusiasts and content creators. This theme integrates modern web technology stacks, provides rich functional modules and highly customizable interfaces, allowing you to easily create a professional and beautiful personal blog website.
->
->In important layouts, Firefly innovatively adds dual sidebars, article grid (multi-column) layout, masonry layout, includes site statistics, calendar component, table of contents and other widgets to enrich the sidebar, while also retaining the original fuwari layout, which can be freely switched in the configuration file according to your preferences.
->
->**For more layout configurations and demos, please see: [Firefly Layout System Details](https://firefly.cuteleaf.cn/posts/firefly-layout-system/)**
->
->Firefly supports i18n multi-language switching, but except for Simplified Chinese, other languages are AI-translated. If there are any errors, welcome to submit [Pull Request](https://github.com/CuteLeaf/Firefly/pulls) for correction.
-
-## ✨ Features
-
-### Core Features
-
-- [x] **Astro + Tailwind CSS** - Ultra-fast static site generation based on modern tech stack
-- [x] **Smooth Animations** - Swup page transition animations for silky smooth browsing experience
-- [x] **Responsive Design** - Perfect adaptation for desktop, tablet and mobile devices
-- [x] **Multi-language Support** - i18n internationalization, supports Simplified Chinese, Traditional Chinese, English, Japanese, Russian
-- [x] **Full-text Search** - Client-side search based on Pagefind, supports article content indexing.
-
-### Personalization
-- [x] **Dynamic Sidebar** - Supports single sidebar, dual sidebar configuration
-- [x] **Article Layout** - Supports list (single column) and grid (multi-column/masonry) layout
-- [x] **Font Management** - Custom font support with rich font selector
-- [x] **Footer Configuration** - HTML content injection, fully customizable
-- [x] **Light/Dark Mode** - Supports light/dark/system three modes
-- [x] **Navbar Customization** - Logo, title, links fully customizable
-- [x] **Wallpaper Mode Switching** - Banner wallpaper, fullscreen wallpaper, solid background
-- [x] **Theme Color Customization** - 360° hue adjustment
-
-
-If you have useful features and optimizations, please submit a [Pull Request](https://github.com/CuteLeaf/Firefly/pulls)
-
-## 🚀 Quick Start
-
-### Requirements
-
-- Node.js ≤ 22
-- pnpm ≤ 9
-
-### Local Development
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Cuteleaf/Firefly.git
-   cd Firefly
-   ```
-   
-   **First [Fork](https://github.com/CuteLeaf/Firefly/fork) to your own repository then clone (recommended). Don't forget to Star before Fork!**
-
-   ```bash
-   git clone https://github.com/you-github-name/Firefly.git
-   cd Firefly
-   ```
-3. **Install dependencies:**
-   ```bash
-   # Install pnpm if not installed
-   npm install -g pnpm
-   
-   # Install project dependencies
-   pnpm install
-   ```
-
-4. **Configure blog:**
-   - Edit configuration files in `src/config/` directory to customize blog settings
-
-5. **Start development server:**
-   ```bash
-   pnpm dev
-   ```
-   Blog will be available at `http://localhost:4321`
-
-### Platform Hosting Deployment
-- **Refer to the [official guide](https://docs.astro.build/en/guides/deploy/) to deploy your blog to Vercel, Netlify, GitHub Pages, Cloudflare Pages, EdgeOne Pages, etc.**
-
-   Framework Preset: `Astro`
-
-   Root Directory: `./`
-
-   Output Directory: `dist`
-
-   Build Command: `pnpm run build`
-
-   Install Command: `pnpm install`
-
-## 📖 Configuration
-
-> 📚 **Detailed Configuration Documentation**: Check [Firefly Documentation](https://docs-firefly.cuteleaf.cn/) for complete configuration guide
-
-### Setting Website Language
-
-To set the default language for your blog, edit the `src/config/siteConfig.ts` file:
-
-```typescript
-// Define site language
-const SITE_LANG = "zh_CN";
-```
-
-**Supported language codes:**
-- `zh_CN` - Simplified Chinese
-- `zh_TW` - Traditional Chinese
-- `en` - English
-- `ja` - Japanese
-- `ru` - Russian
-
-### Configuration File Structure
-
-```
-src/
-├── config/
-│   ├── index.ts              # Configuration index file
-│   ├── siteConfig.ts         # Site basic configuration
-│   ├── backgroundWallpaper.ts # Background wallpaper configuration
-│   ├── profileConfig.ts      # User profile configuration
-│   ├── commentConfig.ts      # Comment system configuration
-│   ├── announcementConfig.ts # Announcement configuration
-│   ├── licenseConfig.ts      # License configuration
-│   ├── footerConfig.ts       # Footer configuration
-│   ├── FooterConfig.html     # Footer HTML content
-│   ├── expressiveCodeConfig.ts # Code highlighting configuration
-│   ├── sakuraConfig.ts       # Sakura effect configuration
-│   ├── fontConfig.ts         # Font configuration
-│   ├── sidebarConfig.ts      # Sidebar layout configuration
-│   ├── navBarConfig.ts       # Navbar configuration
-│   ├── musicConfig.ts        # Music player configuration
-│   ├── pioConfig.ts          # Mascot configuration
-│   ├── adConfig.ts           # Ad configuration
-│   ├── friendsConfig.ts      # Friend links configuration
-│   ├── galleryConfig.ts      # Gallery configuration
-│   ├── sponsorConfig.ts      # Sponsor configuration
-│   └── coverImageConfig.ts   # Article cover image configuration
-```
-
-
-## ⚙️ Article Frontmatter
-
-```yaml
----
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
-image: ./cover.jpg  # Or use "api" to enable random cover images
-tags: [Foo, Bar]
-category: Front-end
-draft: false
-lang: zh-CN      # Only set when article language differs from site language in `siteConfig.ts`
-pinned: false    # Pin article
-comment: true    # Enable comments
----
-```
-
-## 📖 Markdown Extensions
-
-In addition to the default [GitHub Flavored Markdown](https://github.github.com/gfm/) support in Astro, there are some additional Markdown features:
-
-- Admonitions - Supports configuration for GitHub, Obsidian, and VitePress themes ([Preview and Usage](https://firefly.cuteleaf.cn/posts/markdown-extended/))
-- GitHub Repository Cards ([Preview and Usage](https://firefly.cuteleaf.cn/posts/markdown-extended/))
-- Enhanced Code Blocks based on Expressive Code ([Preview](http://firefly.cuteleaf.cn/posts/code-examples/) / [Documentation](https://expressive-code.com/))
-
-## 🧞 Commands
-
-All commands need to be executed in the project root directory:
-
-| Command                    | Action                                              |
-|:---------------------------|:----------------------------------------------------|
-| `pnpm install`             | Install dependencies                                |
-| `pnpm dev`                 | Start local development server at `localhost:4321`  |
-| `pnpm build`               | Build site to `./dist/`                             |
-| `pnpm preview`             | Preview built site locally                          |
-| `pnpm check`               | Check for errors in code                            |
-| `pnpm format`              | Format your code using Biome                        |
-| `pnpm new-post <filename>` | Create new article                                  |
-| `pnpm astro ...`           | Execute `astro add`, `astro check` and other commands |
-| `pnpm astro --help`        | Display Astro CLI help                              |
-
-## 🙏 Acknowledgments
-
-Special thanks to [saicaca](https://github.com/saicaca) for developing the [fuwari](https://github.com/saicaca/fuwari) template, which Firefly is based on for secondary development.
-
-The copyright of Firefly-related image assets belongs to [miHoYo](https://www.mihoyo.com/), the developer of the game ["Honkai: Star Rail"](https://sr.mihoyo.com/).
-
-### Tech Stack
-
-- [Astro](https://astro.build) 
-- [Tailwind CSS](https://tailwindcss.com) 
-- [Iconify](https://iconify.design)
-
-### Inspiration Projects
-
-- [fuwari](https://github.com/saicaca/fuwari)
-- [hexo-theme-shoka](https://github.com/amehime/hexo-theme-shoka)
-- [astro-koharu](https://github.com/cosZone/astro-koharu)
-- [Mizuki](https://github.com/matsuzaka-yuki/Mizuki)
-
-### Other References
-- Blogger `霞葉` [Bangumi Collection](https://kasuha.com/posts/fuwari-enhance-ep2/) page component
-- Bilibili creator `公公的日常` Q-version [Firefly Mascot Spine Model](https://www.bilibili.com/video/BV1fuVzzdE5y)
-
-## 📝 License
-
-This project is licensed under the [MIT license](https://mit-license.org/). See the [LICENSE](./LICENSE) file for details.
-
-Originally forked from [saicaca/fuwari](https://github.com/saicaca/fuwari). Thanks to the original author for their contributions. 
-
-**Copyright Notice:**
-- Copyright (c) 2024 [saicaca](https://github.com/saicaca) - [fuwari](https://github.com/saicaca/fuwari)
-- Copyright (c) 2025 [CuteLeaf](https://github.com/CuteLeaf) - [Firefly](https://github.com/CuteLeaf/Firefly)
-
-Under the MIT license, you are free to use, modify, and distribute the code, but you must retain the above copyright notice.
-
-## 🍀 Contributors
-
-Thanks to the following contributors for their contributions to this project. If you have any questions or suggestions, please submit an [Issue](https://github.com/CuteLeaf/Firefly/issues) or [Pull Request](https://github.com/CuteLeaf/Firefly/pulls).
-
-><a href="https://github.com/CuteLeaf/Firefly/graphs/contributors">
->  <img src="https://contrib.rocks/image?repo=CuteLeaf/Firefly" />
-></a>
-
-Thanks to the following contributors for their contributions to the original project [fuwari](https://github.com/saicaca/fuwari), which laid the foundation for this project.
-
-><a href="https://github.com/saicaca/fuwari/graphs/contributors">
->  <img src="https://contrib.rocks/image?repo=saicaca/fuwari" />
-></a>
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=CuteLeaf/Firefly&type=Date)](https://star-history.com/#CuteLeaf/Firefly&Date)
-
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+此项目基于 Astro [Firefly](https://github.com/CuteLeaf/Firefly) 项目魔改，支持 Notion 文章和友链导入。如需查看原文档，[点击这里](/README.zh.md)。
+
+## 🌟 介绍
+基于 Notion API 同步内容到 Firefly 主题博客中，目前已完成以下内容：
+- ✅ 支持同步 Notion 数据库中文章数据到本地（ [notion-to-md](https://github.com/souvikinator/notion-to-md) 实现）
+- ✅ 支持同步文章封面图和正文中图片到本地
+- ✅ 支持同步 Notion 数据库中友链信息到本地
+- ✅ 新增友链提交表单，可以直接提交友链信息到 Notion 数据库中。
+
+## 🛠️ 配置说明
+1. 基础配置
+    在项目根目录中将 `.env.example` 重命名为 `.env`，按提示写入配置。
+    - `NOTION_TOKEN`：Notion 内部集成令牌
+    - `NOTION_CONTENTS_DATABASE_ID`：Notion 文章数据源 ID
+    - `NOTION_LINKS_DATABASE_ID`：Notion 友链数据源 ID
+    - `ENABLE_PROCESS_COVER_IMAGE`：是否启用处理封面图片，默认值为 `false`，启用后当文章有封面图时，会将封面图下载到本地，存于文章文件夹中。
+    - `ENABLE_PROCESS_CONTENT_IMAGES`：是否启用处理文章内图片，默认值为 `false`，启用后当文章正文中有图片时，会将图片下载到本地，存于文章文件夹中。
+2. Notion 数据库配置
+    - 创建文章数据库，数据库中需要包含以下属性：
+
+    | 描述 | 字段名称 | 字段属性 |
+    | :--- | :------ | :--- |
+    | 标题 | Title | 文本 |
+    | 封面图 | Cover Image | 文件和媒体 |
+    | 发布日期 | Published | 日期 |
+    | 更新日期 | Updated | 日期 |
+    | 状态 | Status | 状态（已发布/草稿） |
+    | 分类 | Category | 选择 |
+    | 标签 | Tags | 多选 |
+    | 描述 | Description | 文本 |
+    | 置顶 | Pinned | 复选框 |
+    
+    - 创建友链数据库，数据库中需要包含以下属性：
+
+    | 描述 | 字段名称 | 字段属性 |
+    | :--- | :------ | :--- |
+    | 状态 | Status | 状态（已通过/待审核） |
+    | 站点名称 | Title | 文本 |
+    | 站点描述 | Desc | 文本 |
+    | 站点链接 | Siteurl | 网址 |
+    | 站点图标链接 | Imgurl | 网址 |
+    | 标签 | Tags | 多选 |
+    | 是否启用 | Enabled | 复选框 |
+    | 权重 | Weight | 数字 |
+
+    - 按需在对于 Notion 数据库中写入记录即可。
+
+3. 高级配置
+    - 在 `scripts/sync-notion-contents.js` 中找到 `CONFIG.skipDomains` 进行修改，可指定哪些域名的图片不下载到本地。
+
+## 🚀 使用方法
+1. 同步文章（同步到 `src/content/posts` 目录，以文章 `slug` 作为文件夹名）
+- 终端输入 `pnpm sync-contents:all` 即可同步文章到本地（**会同步覆盖本地所有文章**）
+- 终端输入 `pnpm sync-contents:new` 即可同步文章到本地（**会同步所有本地不存在的新文章，不会覆盖已存在文章**）
+- **同步后不推荐修改文章 `slug` ，脚本会根据 `slug` 判断是否为同一文章，若修改可能会导致文章重复或丢失**
+2. 同步友链（同步到 `src/config/friendsLinks.json` ，以 JSON 形式存储）
+- 终端输入 `pnpm sync-links` 即可同步**所有**友链到本地。
+3. 开启友链提交表单
+- 在 `src/config/friendsConfig.ts` 中找到 `showSubmitForm` ，将其值设为 `true` 即可开启友链提交表单（表单位于友链页底部）。
+
+## 📝 更新日志
+
+### ⚠️ 注意事项
+
+- 在不造成严重冲突的前提下会尽可能跟上 Firefly 主题的更新，但由于 Firefly 主题的更新频率较高，可能会导致一些功能的缺失或变更，如有需要请参考 [Firefly文档](https://docs-firefly.cuteleaf.cn/zh/) 进行手动更新。如遇冲突问题请及时反馈。
+
+### 📝 v0.1.0 (2026-02-26)
+- 支持同步 Notion 数据库中文章数据到本地
+- 支持同步文章封面图和正文中图片到本地
+- 支持同步 Notion 数据库中友链信息到本地
+- 新增友链提交表单，可以直接提交友链信息到 Notion 数据库中。
+- Firefly 主题版本为 6.7.3
