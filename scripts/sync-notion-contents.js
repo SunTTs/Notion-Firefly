@@ -13,8 +13,8 @@ dotenv.config({ path: '.env' });
 const CONFIG = {
     notionToken: process.env.NOTION_TOKEN,
     notionContentsDatabaseId: process.env.NOTION_CONTENTS_DATABASE_ID,
-    enableProcessCoverImage: process.env.ENABLE_PROCESS_COVER_IMAGE === 'false',
-    enableProcessContentImages: process.env.ENABLE_PROCESS_CONTENT_IMAGES === 'false',
+    enableProcessCoverImage: process.env.ENABLE_PROCESS_COVER_IMAGE || 'false',
+    enableProcessContentImages: process.env.ENABLE_PROCESS_CONTENT_IMAGES || 'false',
     contentDir: path.join(process.cwd(), 'src/content/posts'),
     postsStatus: 'Published',
     skipDomains: [],  // 跳过指定域名的图片下载
@@ -133,10 +133,7 @@ async function processImages(markdownContent, postDir) {
 /**
  * 处理封面图片
  */
-async function processCoverImage(cover, postDir) {
-  if (!cover) return null;
-
-  const coverUrl = cover.external?.url || cover.file?.url;
+async function processCoverImage(coverUrl, postDir) {
   if (!coverUrl) return null;
 
   const coverExt = coverUrl.split('.').pop();
@@ -191,7 +188,7 @@ async function syncPost(post) {
   // 获取文章元信息
   const title = properties.Title?.title[0]?.plain_text || 'Untitled';
   const slug = properties.Slug?.rich_text[0]?.plain_text || `post-${Date.now()}`;
-  const image = properties.Image?.files[0]?.external?.url || '';
+  const image = properties.Image?.files[0]?.external?.url || properties.Image?.files[0]?.file?.url || '';
     
   // 创建文章目录
   const postDir = path.join(CONFIG.contentDir, slug);
@@ -216,7 +213,7 @@ async function syncPost(post) {
 
   // 处理封面图片
   let coverPath = image;
-  if (CONFIG.enableProcessCoverImage && image) {
+  if (CONFIG.enableProcessCoverImage === 'true' && image !== '') {
     coverPath = await processCoverImage(image, postDir);
   }
 
@@ -225,7 +222,7 @@ async function syncPost(post) {
     
   // 处理文章中的图片
   let processedContent = markdownContent;
-  if (CONFIG.enableProcessContentImages) {
+  if (CONFIG.enableProcessContentImages === 'true') {
     processedContent = await processImages(markdownContent, postDir);
   }
 
@@ -239,7 +236,7 @@ category: ${properties.Category?.select?.name || 'Uncategorized'}
 tags: [${properties.Tags?.multi_select?.map(tag => `'${tag.name}'`).join(', ') || ''}]
 published: ${properties.Published?.date?.start || new Date().toISOString().split('T')[0]}
 updated: ${properties.Updated?.date?.start || new Date().toISOString().split('T')[0]}
-image: ${coverPath || '""'}
+image: ${coverPath}
 description: ${properties.Description?.rich_text[0]?.plain_text || ''}
 ---`
 
@@ -257,32 +254,6 @@ description: ${properties.Description?.rich_text[0]?.plain_text || ''}
 }
 
 /**
- * 清空本地所有文章（保留images文件夹）
- */
-async function deleteAllPosts() {
-  try {
-    const postsDir = path.join(CONFIG.contentDir);
-    const items = await fs.readdir(postsDir);
-    
-    for (const item of items) {
-      if (item === 'images') continue;
-      const itemPath = path.join(postsDir, item);
-      const stats = await fs.stat(itemPath);
-      
-      if (stats.isDirectory()) {
-        await fs.remove(itemPath);
-      } else {
-        await fs.unlink(itemPath);
-      }
-    }
-    
-    console.log(`✅ 已清空所有文章`);
-  } catch (error) {
-    console.error(`❌ 清空目录失败: ${error.message}`);
-  }
-}
-
-/**
  * 主函数
  */
 async function main() {
@@ -296,16 +267,11 @@ async function main() {
     console.log('🚀 开始同步Notion文章...');
 
     console.log(`\n🔧 同步模式: ${SYNC_MODE === 'new' ? '新增' : '覆盖'}`);
-    console.log(`🔧 是否处理封面图片: ${CONFIG.enableProcessCoverImage ? '是' : '否'}`);
-    console.log(`🔧 是否处理文章图片: ${CONFIG.enableProcessContentImages ? '是' : '否'}`);
+    console.log(`🔧 是否处理封面图片: ${CONFIG.enableProcessCoverImage === 'true' ? '是' : '否'}`);
+    console.log(`🔧 是否处理文章图片: ${CONFIG.enableProcessContentImages === 'true' ? '是' : '否'}`);
     
     // 确保posts目录存在
     await fs.ensureDir(CONFIG.contentDir);
-
-    // 覆盖模式先清空所有文章
-    if (SYNC_MODE === 'all') {
-      await deleteAllPosts();
-    }
 
     // 获取所有已发布的文章
     const posts = await getNotionPosts();
