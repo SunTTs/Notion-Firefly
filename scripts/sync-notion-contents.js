@@ -257,6 +257,32 @@ description: ${properties.Description?.rich_text[0]?.plain_text || ''}
 }
 
 /**
+ * 清空本地所有文章（保留images文件夹）
+ */
+async function deleteAllPosts() {
+  try {
+    const postsDir = path.join(CONFIG.contentDir);
+    const items = await fs.readdir(postsDir);
+    
+    for (const item of items) {
+      if (item === 'images') continue;
+      const itemPath = path.join(postsDir, item);
+      const stats = await fs.stat(itemPath);
+      
+      if (stats.isDirectory()) {
+        await fs.remove(itemPath);
+      } else {
+        await fs.unlink(itemPath);
+      }
+    }
+    
+    console.log(`✅ 已清空所有文章`);
+  } catch (error) {
+    console.error(`❌ 清空目录失败: ${error.message}`);
+  }
+}
+
+/**
  * 主函数
  */
 async function main() {
@@ -275,6 +301,11 @@ async function main() {
     
     // 确保posts目录存在
     await fs.ensureDir(CONFIG.contentDir);
+
+    // 覆盖模式先清空所有文章
+    if (SYNC_MODE === 'all') {
+      await deleteAllPosts();
+    }
 
     // 获取所有已发布的文章
     const posts = await getNotionPosts();
