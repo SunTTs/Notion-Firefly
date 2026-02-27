@@ -236,7 +236,7 @@ category: ${properties.Category?.select?.name || 'Uncategorized'}
 tags: [${properties.Tags?.multi_select?.map(tag => `'${tag.name}'`).join(', ') || ''}]
 published: ${properties.Published?.date?.start || new Date().toISOString().split('T')[0]}
 updated: ${properties.Updated?.date?.start || new Date().toISOString().split('T')[0]}
-image: ${coverPath}
+image: ${coverPath || '""'}
 description: ${properties.Description?.rich_text[0]?.plain_text || ''}
 ---`
 
