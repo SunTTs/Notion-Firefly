@@ -335,8 +335,10 @@ const description =
           desc: formData.get('desc'),
         };
         
+        // 这里注意替换你的友链提交 API 地址
+        const submitLinksApi = "api/submit-links/";
         try {
-          const response = await fetch('/api/submit-links/', {
+          const response = await fetch(submitLinksApi, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -355,6 +357,7 @@ const description =
             messageDiv.className = 'mt-4 p-3 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
           }
         } catch (error) {
+          // console.error(error);
           messageDiv.textContent = '网络错误，请检查连接后重试。';
           messageDiv.className = 'mt-4 p-3 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
         } finally {
