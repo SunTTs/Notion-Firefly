@@ -29,6 +29,8 @@ export type SiteConfig = {
 	card: {
 		// 是否开启卡片边框和阴影立体效果
 		border: boolean;
+		// 是否让卡片风格跟随主题色相
+		followTheme?: boolean;
 	};
 
 	// 字体配置
@@ -45,9 +47,10 @@ export type SiteConfig = {
 		theme: "github" | "obsidian" | "vitepress";
 	};
 
-	// 添加bangumi配置
+	// bangumi配置
 	bangumi?: {
 		userId?: string; // Bangumi用户ID
+		categoryOrder?: ("anime" | "game" | "book" | "music" | "real")[]; // 条目类型排序顺序
 	};
 
 	generateOgImages: boolean;
@@ -66,7 +69,9 @@ export type SiteConfig = {
 		};
 		title?: string; // 导航栏标题，如果不设置则使用 title
 		widthFull?: boolean; // 导航栏是否占满屏幕宽度
+		menuAlign?: "left" | "center"; // 导航菜单对齐方式（仅桌面端菜单）
 		followTheme?: boolean; // 导航栏图标和标题是否跟随主题色
+		stickyNavbar?: boolean; // 导航栏是否固定在顶部始终可见
 	};
 
 	showLastModified: boolean; // 控制"上次编辑"卡片显示的开关
@@ -75,6 +80,7 @@ export type SiteConfig = {
 
 	// 页面开关配置
 	pages: {
+		friends: boolean; // 友链页面开关
 		sponsor: boolean; // 赞助页面开关
 		guestbook: boolean; // 留言板页面开关
 		bangumi: boolean;
@@ -87,6 +93,9 @@ export type SiteConfig = {
 	// 文章列表布局配置
 	postListLayout: {
 		defaultMode: "list" | "grid"; // 默认布局模式：list=列表模式，grid=网格模式
+		mobileDefaultMode?: "list" | "grid"; // 移动端默认布局模式（视口宽度<780px时使用），不设置则跟随 defaultMode
+		showTags: boolean; // 是否在文章列表中显示标签
+		descriptionLines?: number; // 文章简介显示行数，0 表示不截断，默认 2
 		allowSwitch: boolean; // 是否允许用户切换布局
 		grid: {
 			// 网格布局配置，仅在 defaultMode 为 "grid" 或允许切换布局时生效
@@ -106,6 +115,18 @@ export type SiteConfig = {
 	analytics?: {
 		googleAnalyticsId?: string; // Google Analytics ID
 		microsoftClarityId?: string; // Microsoft Clarity ID
+		umamiAnalytics?: {
+			websiteId?: string; // Umami Website ID
+			scriptUrl?: string; // Umami JS地址，支持使用自建
+		};
+		la51Analytics?: {
+			Id?: string; // 51la 统计 ID
+			sdkUrl?: string; // 自定义 SDK 地址，防止 DNS 污染，默认为 "//sdk.51.la/js-sdk-pro.min.js"
+			ck?: string; // 多个统计 ID 的数据分离标识，默认与 id 相同
+			autoTrack?: boolean; // 开启事件分析功能，默认 true
+			hashMode?: boolean; // 单页面应用统计（Vue/React 等），默认 false
+			screenRecord?: boolean; // 开启网站录屏功能，默认 true
+		};
 	};
 
 	// 图片优化配置
@@ -203,6 +224,7 @@ export type CommentConfig = {
 	waline?: {
 		serverURL: string;
 		lang?: string;
+		emoji: string[];
 		login?: "enable" | "force" | "disable";
 		visitorCount?: boolean; // 是否统计访问量，true 启用访问量，false 关闭
 	};
@@ -276,6 +298,12 @@ export type ExpressiveCodeConfig = {
 	lightTheme: string;
 	/** 代码块折叠插件配置 */
 	pluginCollapsible?: PluginCollapsibleConfig;
+	/** 语言徽章插件配置 */
+	pluginLanguageBadge?: PluginLanguageBadgeConfig;
+};
+
+export type PluginLanguageBadgeConfig = {
+	enable: boolean; // 是否启用语言徽章
 };
 
 export type PluginCollapsibleConfig = {
@@ -552,6 +580,11 @@ export type BackgroundWallpaperConfig = {
 			enableBlur?: boolean; // 是否开启毛玻璃模糊效果
 			blur?: number; // 毛玻璃模糊度
 		};
+		carousel?: {
+			enable: boolean; // 是否启用横幅图片轮播
+			interval?: number; // 轮播间隔时间，单位毫秒
+			switchable?: boolean; // 是否允许用户通过控制面板切换横幅轮播
+		};
 		waves?: {
 			enable:
 				| boolean
@@ -564,6 +597,13 @@ export type BackgroundWallpaperConfig = {
 	};
 	// 全屏透明覆盖模式特有配置
 	overlay?: {
+		switchable?:
+			| boolean
+			| {
+					opacity?: boolean; // 是否允许用户在控制面板调整壁纸透明度
+					blur?: boolean; // 是否允许用户在控制面板调整背景模糊度
+					cardOpacity?: boolean; // 是否允许用户在控制面板调整卡片透明度
+			  }; // 透明模式参数是否可在控制面板调整，支持统一开关或分项开关
 		zIndex?: number; // 层级，确保壁纸在合适的层级显示
 		opacity?: number; // 壁纸透明度，0-1之间
 		blur?: number; // 背景模糊程度，单位px
@@ -614,6 +654,8 @@ export type FriendsPageConfig = {
 	title?: string; // 页面标题，留空则使用 i18n 中的翻译
 	description?: string; // 页面描述，留空则使用 i18n 中的翻译
 	showCustomContent?: boolean; // 是否显示自定义内容（friends.mdx）
+	showComment?: boolean; // 是否显示评论区，默认 true
+	randomizeSort?: boolean; // 是否打乱排序，如果为 true，将忽略 weight，随机排序
 };
 
 // 音乐播放器配置
@@ -691,6 +733,7 @@ export type SponsorConfig = {
 	methods: SponsorMethod[]; // 赞助方式列表
 	sponsors?: SponsorItem[]; // 赞助者列表（可选）
 	showSponsorsList?: boolean; // 是否显示赞助者列表，默认 true
+	showComment?: boolean; // 是否显示评论区，默认 false
 	showButtonInPost?: boolean; // 是否在文章详情页底部显示赞助按钮，默认 true
 };
 

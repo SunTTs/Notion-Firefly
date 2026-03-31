@@ -32,18 +32,26 @@ import mdx from "@astrojs/mdx";
 import rehypeEmailProtection from "./src/plugins/rehype-email-protection.mjs";
 import rehypeExternalLinks from "./src/plugins/rehype-external-links.mjs";
 import rehypeFigure from "./src/plugins/rehype-figure.mjs";
+import { remarkImageGrid } from "./src/plugins/remark-image-grid.js";
 
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.site_url,
-
+	
 	base: "/",
 	trailingSlash: "always",
 
 	// 图像优化配置
 	image: {
 		// 全局响应式布局
-		experimentalLayout: "constrained",
+		layout: "constrained",
+	},
+
+	experimental: {
+		// Rust 编译器以提升构建性能（实验性），部分平台可能会导致构建失败，可以根据需要启用或禁用
+		rustCompiler: false,
+		// 队列渲染以优化性能（实验性）
+		queuedRendering: { enabled: true },
 	},
 
 	integrations: [
@@ -81,7 +89,7 @@ export default defineConfig({
 				"fa7-brands": ["*"],
 				"fa7-regular": ["*"],
 				"fa7-solid": ["*"],
-				"simple-icons": ["*"], 
+				"simple-icons": ["*"],
 				mdi: ["*"],
 			},
 		}),
@@ -90,16 +98,23 @@ export default defineConfig({
 			useDarkModeMediaQuery: false,
 			themeCssSelector: (theme) => `[data-theme='${theme.name}']`,
 			plugins: [
-				pluginLanguageBadge(),
+				// pluginLanguageBadge 配置 - 从expressiveCodeConfig读取设置
+				...(expressiveCodeConfig.pluginLanguageBadge?.enable === true
+					? [pluginLanguageBadge()]
+					: []),
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
 				// pluginCollapsible 配置 - 从expressiveCodeConfig读取设置，使用i18n文本
 				...(expressiveCodeConfig.pluginCollapsible?.enable === true
 					? [
 							pluginCollapsible({
-								lineThreshold: expressiveCodeConfig.pluginCollapsible.lineThreshold || 15,
-								previewLines: expressiveCodeConfig.pluginCollapsible.previewLines || 8,
-								defaultCollapsed: expressiveCodeConfig.pluginCollapsible.defaultCollapsed ?? true,
+								lineThreshold:
+									expressiveCodeConfig.pluginCollapsible.lineThreshold || 15,
+								previewLines:
+									expressiveCodeConfig.pluginCollapsible.previewLines || 8,
+								defaultCollapsed:
+									expressiveCodeConfig.pluginCollapsible.defaultCollapsed ??
+									true,
 								expandButtonText: i18n(I18nKey.codeCollapsibleShowMore),
 								collapseButtonText: i18n(I18nKey.codeCollapsibleShowLess),
 								expandedAnnouncement: i18n(I18nKey.codeCollapsibleExpanded),
@@ -148,6 +163,9 @@ export default defineConfig({
 				const url = new URL(page);
 				const pathname = url.pathname;
 
+				if (pathname === "/friends/" && !siteConfig.pages.friends) {
+					return false;
+				}
 				if (pathname === "/sponsor/" && !siteConfig.pages.sponsor) {
 					return false;
 				}
@@ -170,6 +188,7 @@ export default defineConfig({
 		remarkPlugins: [
 			remarkMath,
 			remarkReadingTime,
+			remarkImageGrid,
 			remarkExcerpt,
 			remarkDirective,
 			remarkSectionize,
@@ -218,26 +237,23 @@ export default defineConfig({
 		],
 	},
 	vite: {
-		plugins: [
-			tailwindcss(),
-		],
+		plugins: [tailwindcss()],
+		server: {
+			watch: {
+				ignored: ["**/package/**", "**/Firefly-docs/**"],
+			},
+		},
 		resolve: {
 			alias: {
 				"@rehype-callouts-theme": `rehype-callouts/theme/${siteConfig.rehypeCallouts.theme}`,
 			},
 		},
 		build: {
-			// 启用资源压缩和优化
-			minify: "terser",
-			terserOptions: {
-				compress: {
-					drop_console: false, // 生产环境可改为true移除console
-					drop_debugger: true,
-				},
-				mangle: true,
-				format: {
-					comments: false,
-				},
+			minify: "esbuild",
+			esbuildOptions: {
+				minify: true,
+				// 移除 console.log 和 debugger
+				drop: ["console", "debugger"],
 			},
 			rollupOptions: {
 				onwarn(warning, warn) {
@@ -253,13 +269,8 @@ export default defineConfig({
 			},
 			// CSS 优化
 			cssCodeSplit: true,
-			cssMinify: true,
-			// 资源大小限制 - 减少内联资源
+			cssMinify: "esbuild",
 			assetsInlineLimit: 4096,
-			// 减少源映射大小（可选，生产环境改为false）
-			sourcemap: false,
-			// 并行处理构建
-			workers: 4,
 		},
 	},
 });

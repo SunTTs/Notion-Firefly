@@ -307,7 +307,11 @@ export function applyWallpaperModeToDocument(mode: WALLPAPER_MODE) {
 		const body = document.body;
 
 		// 移除所有壁纸相关的CSS类
-		body.classList.remove("enable-banner", "wallpaper-transparent");
+		body.classList.remove(
+			"enable-banner",
+			"wallpaper-transparent",
+			"no-banner-layout",
+		);
 
 		// 根据模式添加相应的CSS类
 		switch (mode) {
@@ -317,12 +321,15 @@ export function applyWallpaperModeToDocument(mode: WALLPAPER_MODE) {
 				break;
 			case WALLPAPER_OVERLAY:
 				body.classList.add("wallpaper-transparent");
+				body.classList.add("no-banner-layout");
 				showOverlayMode();
 				break;
 			case WALLPAPER_NONE:
+				body.classList.add("no-banner-layout");
 				hideAllWallpapers();
 				break;
 			default:
+				body.classList.add("no-banner-layout");
 				hideAllWallpapers();
 				break;
 		}
@@ -342,7 +349,11 @@ function ensureWallpaperState(mode: WALLPAPER_MODE) {
 	const body = document.body;
 
 	// 移除所有壁纸相关的CSS类
-	body.classList.remove("enable-banner", "wallpaper-transparent");
+	body.classList.remove(
+		"enable-banner",
+		"wallpaper-transparent",
+		"no-banner-layout",
+	);
 
 	// 根据模式添加相应的CSS类
 	switch (mode) {
@@ -352,9 +363,11 @@ function ensureWallpaperState(mode: WALLPAPER_MODE) {
 			break;
 		case WALLPAPER_OVERLAY:
 			body.classList.add("wallpaper-transparent");
+			body.classList.add("no-banner-layout");
 			showOverlayMode();
 			break;
 		case WALLPAPER_NONE:
+			body.classList.add("no-banner-layout");
 			hideAllWallpapers();
 			break;
 	}
@@ -628,9 +641,18 @@ export function setWallpaperMode(mode: WALLPAPER_MODE): void {
 	}
 	localStorage.setItem("wallpaperMode", mode);
 	applyWallpaperModeToDocument(mode);
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("wallpaperModeChange", {
+				detail: { mode },
+			}),
+		);
+	}
 }
 
 export function initWallpaperMode(): void {
+	// 初始化透明模式参数（透明度/模糊度/卡片透明度）
+	applyStoredOverlaySettingsToDocument();
 	const storedMode = getStoredWallpaperMode();
 	applyWallpaperModeToDocument(storedMode);
 }
@@ -647,6 +669,152 @@ export function getStoredWallpaperMode(): WALLPAPER_MODE {
 		(localStorage.getItem("wallpaperMode") as WALLPAPER_MODE) ||
 		backgroundWallpaper.mode
 	);
+}
+
+// Overlay settings functions
+function clampNumber(value: number, min: number, max: number): number {
+	return Math.min(max, Math.max(min, value));
+}
+
+export function getDefaultOverlayOpacity(): number {
+	return backgroundWallpaper.overlay?.opacity ?? 0.8;
+}
+
+export function getDefaultOverlayBlur(): number {
+	return backgroundWallpaper.overlay?.blur ?? 0;
+}
+
+export function getDefaultOverlayCardOpacity(): number {
+	return backgroundWallpaper.overlay?.cardOpacity ?? 0.6;
+}
+
+export function getStoredOverlayOpacity(): number {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultOverlayOpacity();
+	}
+	const stored = localStorage.getItem("overlayOpacity");
+	if (stored === null) {
+		return getDefaultOverlayOpacity();
+	}
+	const parsed = Number.parseFloat(stored);
+	if (Number.isNaN(parsed)) {
+		return getDefaultOverlayOpacity();
+	}
+	return clampNumber(parsed, 0, 1);
+}
+
+export function getStoredOverlayBlur(): number {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultOverlayBlur();
+	}
+	const stored = localStorage.getItem("overlayBlur");
+	if (stored === null) {
+		return getDefaultOverlayBlur();
+	}
+	const parsed = Number.parseFloat(stored);
+	if (Number.isNaN(parsed)) {
+		return getDefaultOverlayBlur();
+	}
+	return clampNumber(parsed, 0, 20);
+}
+
+export function getStoredOverlayCardOpacity(): number {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultOverlayCardOpacity();
+	}
+	const stored = localStorage.getItem("overlayCardOpacity");
+	if (stored === null) {
+		return getDefaultOverlayCardOpacity();
+	}
+	const parsed = Number.parseFloat(stored);
+	if (Number.isNaN(parsed)) {
+		return getDefaultOverlayCardOpacity();
+	}
+	return clampNumber(parsed, 0, 1);
+}
+
+export function applyOverlayOpacityToDocument(opacity: number): void {
+	if (typeof document === "undefined") {
+		return;
+	}
+	const safeOpacity = clampNumber(opacity, 0, 1);
+	const wallpaperWrapper = document.getElementById("wallpaper-wrapper");
+	if (wallpaperWrapper) {
+		wallpaperWrapper.style.setProperty(
+			"--overlay-opacity",
+			String(safeOpacity),
+		);
+	}
+}
+
+export function applyOverlayBlurToDocument(blur: number): void {
+	if (typeof document === "undefined") {
+		return;
+	}
+	const safeBlur = clampNumber(blur, 0, 20);
+	const wallpaperWrapper = document.getElementById("wallpaper-wrapper");
+	if (wallpaperWrapper) {
+		wallpaperWrapper.style.setProperty("--overlay-blur", `${safeBlur}px`);
+	}
+}
+
+export function applyOverlayCardOpacityToDocument(cardOpacity: number): void {
+	if (typeof document === "undefined") {
+		return;
+	}
+	const safeCardOpacity = clampNumber(cardOpacity, 0, 1);
+	document.documentElement.style.setProperty(
+		"--card-transparent-opacity",
+		String(safeCardOpacity),
+	);
+}
+
+export function setOverlayOpacity(opacity: number): void {
+	const safeOpacity = clampNumber(opacity, 0, 1);
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem("overlayOpacity", String(safeOpacity));
+	}
+	applyOverlayOpacityToDocument(safeOpacity);
+}
+
+export function setOverlayBlur(blur: number): void {
+	const safeBlur = clampNumber(blur, 0, 20);
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem("overlayBlur", String(safeBlur));
+	}
+	applyOverlayBlurToDocument(safeBlur);
+}
+
+export function setOverlayCardOpacity(cardOpacity: number): void {
+	const safeCardOpacity = clampNumber(cardOpacity, 0, 1);
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem("overlayCardOpacity", String(safeCardOpacity));
+	}
+	applyOverlayCardOpacityToDocument(safeCardOpacity);
+}
+
+export function applyStoredOverlaySettingsToDocument(): void {
+	applyOverlayOpacityToDocument(getStoredOverlayOpacity());
+	applyOverlayBlurToDocument(getStoredOverlayBlur());
+	applyOverlayCardOpacityToDocument(getStoredOverlayCardOpacity());
 }
 
 // Waves animation functions
@@ -712,6 +880,10 @@ export function getDefaultBannerTitleEnabled(): boolean {
 	return backgroundWallpaper.banner?.homeText?.enable ?? true;
 }
 
+export function getDefaultBannerCarouselEnabled(): boolean {
+	return backgroundWallpaper.banner?.carousel?.enable ?? false;
+}
+
 export function getStoredBannerTitleEnabled(): boolean {
 	if (
 		typeof localStorage === "undefined" ||
@@ -726,6 +898,25 @@ export function getStoredBannerTitleEnabled(): boolean {
 	return stored === "true";
 }
 
+export function getStoredBannerCarouselEnabled(): boolean {
+	const isSwitchable =
+		backgroundWallpaper.banner?.carousel?.switchable ?? false;
+	if (!isSwitchable) {
+		return getDefaultBannerCarouselEnabled();
+	}
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultBannerCarouselEnabled();
+	}
+	const stored = localStorage.getItem("bannerCarouselEnabled");
+	if (stored === null) {
+		return getDefaultBannerCarouselEnabled();
+	}
+	return stored === "true";
+}
+
 export function setBannerTitleEnabled(enabled: boolean): void {
 	if (
 		typeof localStorage === "undefined" ||
@@ -735,6 +926,27 @@ export function setBannerTitleEnabled(enabled: boolean): void {
 	}
 	localStorage.setItem("bannerTitleEnabled", String(enabled));
 	applyBannerTitleEnabledToDocument(enabled);
+}
+
+export function setBannerCarouselEnabled(enabled: boolean): void {
+	const safeEnabled = !!enabled;
+	const isSwitchable =
+		backgroundWallpaper.banner?.carousel?.switchable ?? false;
+	if (
+		isSwitchable &&
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem("bannerCarouselEnabled", String(safeEnabled));
+	}
+	applyBannerCarouselEnabledToDocument(safeEnabled);
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("bannerCarouselChange", {
+				detail: { enabled: safeEnabled },
+			}),
+		);
+	}
 }
 
 export function applyBannerTitleEnabledToDocument(enabled: boolean): void {
@@ -757,4 +969,14 @@ export function applyBannerTitleEnabledToDocument(enabled: boolean): void {
 			bannerTextOverlay.classList.add("user-hidden");
 		}
 	}
+}
+
+export function applyBannerCarouselEnabledToDocument(enabled: boolean): void {
+	if (typeof document === "undefined") {
+		return;
+	}
+	document.documentElement.setAttribute(
+		"data-banner-carousel-enabled",
+		String(enabled),
+	);
 }

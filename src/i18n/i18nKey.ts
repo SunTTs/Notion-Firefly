@@ -16,6 +16,7 @@ enum I18nKey {
 	recentPosts = "recentPosts",
 	postList = "postList",
 	tableOfContents = "tableOfContents",
+	tocEmpty = "tocEmpty",
 	music = "music",
 
 	// 公告栏
@@ -190,6 +191,15 @@ enum I18nKey {
 	// 置顶
 	pinned = "pinned",
 
+	// 相关文章推荐
+	relatedPosts = "relatedPosts",
+	randomPosts = "randomPosts",
+	smartRecommend = "smartRecommend",
+	randomRecommend = "randomRecommend",
+
+	// 加密
+	postEncrypted = "postEncrypted",
+
 	// 壁纸模式
 	wallpaperMode = "wallpaperMode",
 	wallpaperBannerMode = "wallpaperBannerMode",
@@ -199,7 +209,12 @@ enum I18nKey {
 	// 横幅设置
 	bannerSettings = "bannerSettings",
 	bannerTitle = "bannerTitle",
+	bannerCarousel = "bannerCarousel",
 	wavesAnimation = "wavesAnimation",
+	overlaySettings = "overlaySettings",
+	overlayOpacity = "overlayOpacity",
+	overlayBlur = "overlayBlur",
+	overlayCardOpacity = "overlayCardOpacity",
 
 	// 文章布局
 	postListLayout = "postListLayout",

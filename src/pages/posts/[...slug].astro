@@ -9,7 +9,7 @@ import License from "@components/misc/License.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPosts } from "@utils/content-utils";
+import { getRelatedPosts, getSortedPosts } from "@utils/content-utils";
 import {
 	getFileDirFromPath,
 	getPostUrlBySlug,
@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import CoverImage from "@/components/common/CoverImage.astro";
 import PostMetadata from "@/components/layout/PostMeta.astro";
+import RecommendedPost from "@/components/misc/RecommendedPost.astro";
 import SharePoster from "@/components/misc/SharePoster.svelte";
 import { coverImageConfig } from "@/config/coverImageConfig";
 import { licenseConfig } from "@/config/licenseConfig";
@@ -126,6 +127,8 @@ const jsonLd = {
 		: siteConfig.lang.replace("_", "-"),
 	// TODO include cover image here
 };
+
+const relatedPosts = await getRelatedPosts(entry, 5);
 ---
 
 <MainGridLayout
@@ -190,6 +193,18 @@ const jsonLd = {
             }
           </div>
         </div>
+        {entry.data.password && (
+          <div class="flex flex-row items-center">
+            <div
+              class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+            >
+              <Icon name="material-symbols:lock-outline" />
+            </div>
+            <div class="text-sm">
+              {i18n(I18nKey.postEncrypted)}
+            </div>
+          </div>
+        )}
       </div>
 
       <!-- title -->
@@ -425,17 +440,18 @@ const jsonLd = {
   <!-- 上次编辑时间 -->
   {
     siteConfig.showLastModified && (() => {
-      const lastModified = dayjs(
-        entry.data.updated || entry.data.published
-      );
-      const now = dayjs();
-      const daysDiff = now.diff(lastModified, "day");
-      // 使用用户定义的阈值，如果没有定义则默认为1天
+      const lastModified = dayjs(entry.data.updated || entry.data.published);
+      const dateStr = lastModified.format("YYYY-MM-DD");
       const outdatedThreshold = siteConfig.outdatedThreshold ?? 1;
-      const shouldShowOutdatedCard = daysDiff >= outdatedThreshold;
 
-      return shouldShowOutdatedCard ? (
-        <div class="card-base p-6 mb-4">
+      // 1. 預設加上 hidden 隱藏，並把時間與閾值綁在 data-* 屬性
+      return (
+        <div 
+          id="outdated-card" 
+          class="card-base p-6 mb-4 hidden" 
+          data-date={lastModified.toISOString()} 
+          data-threshold={outdatedThreshold}
+        >
           <div class="flex items-center gap-2">
             <div class="transition h-9 w-9 rounded-lg overflow-hidden relative flex items-center justify-center mr-0">
               <Icon
@@ -444,80 +460,86 @@ const jsonLd = {
               />
             </div>
 
-            {(() => {
-              const dateStr = lastModified.format("YYYY-MM-DD");
-              const isOutdated = daysDiff >= 1;
-
-              return (
-                <div class="flex flex-col gap-0.1">
-                  <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
-                    {`${i18n(I18nKey.lastModifiedPrefix)}${dateStr}${
-                      isOutdated
-                        ? `，${i18n(I18nKey.lastModifiedDaysAgo).replace("{days}", daysDiff.toString())}`
-                        : ""
-                    }`}
-                  </div>
-                  {isOutdated && (
-                    <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
-                      {i18n(I18nKey.lastModifiedOutdated)}
-                    </p>
-                  )}
-                </div>
-              );
-            })()}
+            <div class="flex flex-col gap-0.1">
+              <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
+                {i18n(I18nKey.lastModifiedPrefix)}{dateStr}
+                <span id="days-ago-text" data-template={i18n(I18nKey.lastModifiedDaysAgo)}></span>
+              </div>
+              <p id="outdated-warning" class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75 hidden">
+                {i18n(I18nKey.lastModifiedOutdated)}
+              </p>
+            </div>
           </div>
         </div>
-      ) : null;
+      );
     })()
   }
+
+  <script>
+    import dayjs from "dayjs";
+
+    const card = document.getElementById('outdated-card');
+    
+    if (card) {
+      // 讀取伺服器給的日期，並用 dayjs 直接算出差異天數
+      const lastModified = dayjs(card.dataset.date);
+      const daysDiff = dayjs().diff(lastModified, "day");
+      const threshold = Number(card.dataset.threshold);
+
+      // 如果超過閾值，就顯示卡片與提示文字
+      if (daysDiff >= threshold) {
+        card.classList.remove('hidden');
+
+        if (daysDiff >= 1) {
+          const textEl = document.getElementById('days-ago-text');
+          if (textEl && textEl.dataset.template) {
+            textEl.textContent = `，${textEl.dataset.template.replace("{days}", daysDiff.toString())}`;
+          }
+          
+          const warningEl = document.getElementById('outdated-warning');
+          if (warningEl) {
+            warningEl.classList.remove('hidden');
+          }
+        }
+      }
+    }
+  </script>
 
   <div
     class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"
   >
     <a
-      href={entry.data.nextSlug ? getPostUrlBySlug(entry.data.nextSlug) : "#"}
-      class:list={[
-        "w-full font-bold overflow-hidden active:scale-95",
-        { "pointer-events-none": !entry.data.nextSlug },
-      ]}
+      href={entry.data.nextSlug ? getPostUrlBySlug(entry.data.nextSlug) : url("/")}
+      class="w-full font-bold overflow-hidden active:scale-95"
     >
-      {
-        entry.data.nextSlug && (
-          <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-start! gap-4">
-            <Icon
-              name="material-symbols:chevron-left-rounded"
-              class="text-[2rem] text-(--primary)"
-            />
-            <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
-              {entry.data.nextTitle}
-            </div>
-          </div>
-        )
-      }
+      <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-start! gap-4">
+        <Icon
+          name="material-symbols:chevron-left-rounded"
+          class="text-[2rem] text-(--primary)"
+        />
+        <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
+          {entry.data.nextTitle || i18n(I18nKey.home)}
+        </div>
+      </div>
     </a>
 
     <a
-      href={entry.data.prevSlug ? getPostUrlBySlug(entry.data.prevSlug) : "#"}
-      class:list={[
-        "w-full font-bold overflow-hidden active:scale-95",
-        { "pointer-events-none": !entry.data.prevSlug },
-      ]}
+      href={entry.data.prevSlug ? getPostUrlBySlug(entry.data.prevSlug) : url("/")}
+      class="w-full font-bold overflow-hidden active:scale-95"
     >
-      {
-        entry.data.prevSlug && (
-          <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-end! gap-4">
-            <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
-              {entry.data.prevTitle}
-            </div>
-            <Icon
-              name="material-symbols:chevron-right-rounded"
-              class="text-[2rem] text-(--primary)"
-            />
-          </div>
-        )
-      }
+      <div class="btn-card rounded-2xl w-full h-15 max-w-full px-4 flex items-center justify-end! gap-4">
+        <div class="overflow-hidden transition text-ellipsis whitespace-nowrap max-w-[calc(100%-3rem)] text-black/75 dark:text-white/75">
+          {entry.data.prevTitle || i18n(I18nKey.home)}
+        </div>
+        <Icon
+          name="material-symbols:chevron-right-rounded"
+          class="text-[2rem] text-(--primary)"
+        />
+      </div>
     </a>
   </div>
+
+  <RecommendedPost relatedPosts={relatedPosts} currentPostId={entry.id} />
 
   <!-- 评论 -->
   {entry.data.comment && !entry.data.password && <Comment post={entry} />}

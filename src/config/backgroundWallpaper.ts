@@ -126,7 +126,16 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			// 是否开启毛玻璃模糊效果，开启可能会影响页面性能，如果不开启则是半透明，请根据自己的喜好开启
 			enableBlur: true,
 			// 毛玻璃模糊度
-			blur: 3,
+			blur: 10,
+		},
+		// 横幅图片轮播配置，仅在当配置多张图片时生效
+		carousel: {
+			// 是否启用横幅图片轮播；关闭时保持每次刷新随机显示一张
+			enable: true,
+			// 轮播切换间隔（毫秒）
+			interval: 5000,
+			// 是否允许用户通过控制面板切换横幅轮播
+			switchable: true,
 		},
 		// 水波纹动画效果配置，开启会影响页面性能，请根据自己的喜好开启
 		waves: {
@@ -142,13 +151,19 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	},
 	// 全屏透明覆盖模式特有配置
 	overlay: {
+		// 是否允许用户通过控制面板调整全屏透明模式参数
+		switchable: {
+			opacity: true,
+			blur: true,
+			cardOpacity: true,
+		},
 		// 层级，确保壁纸在背景层
 		zIndex: -1,
 		// 壁纸透明度
 		opacity: 0.8,
-		// 背景模糊程度
-		blur: 1,
-		// 卡片背景透明度，0-1之间，值越小越透明
-		cardOpacity: 0.6,
+		// 背景模糊度
+		blur: 10,
+		// 卡片透明度，0-1之间，值越小越透明
+		cardOpacity: 0.5,
 	},
 };

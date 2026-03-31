@@ -20,6 +20,7 @@ export const zh_CN: Translation = {
 	[Key.recentPosts]: "最新文章",
 	[Key.postList]: "文章列表",
 	[Key.tableOfContents]: "目录",
+	[Key.tocEmpty]: "当前页面没有目录",
 	[Key.music]: "音乐",
 	[Key.musicNoPlaying]: "暂未播放",
 	[Key.musicLyrics]: "歌词",
@@ -192,6 +193,15 @@ export const zh_CN: Translation = {
 	// 置顶
 	[Key.pinned]: "置顶",
 
+	// 相关文章推荐
+	[Key.relatedPosts]: "相关文章",
+	[Key.randomPosts]: "随机文章",
+	[Key.smartRecommend]: "智能推荐",
+	[Key.randomRecommend]: "随机推荐",
+
+	// 加密
+	[Key.postEncrypted]: "本文已加密",
+
 	// 壁纸模式
 	[Key.wallpaperMode]: "壁纸模式",
 	[Key.wallpaperBannerMode]: "横幅壁纸",
@@ -201,7 +211,12 @@ export const zh_CN: Translation = {
 	// 横幅设置
 	[Key.bannerSettings]: "横幅设置",
 	[Key.bannerTitle]: "首页横幅标题",
+	[Key.bannerCarousel]: "横幅轮播",
 	[Key.wavesAnimation]: "水波纹动画",
+	[Key.overlaySettings]: "透明设置",
+	[Key.overlayOpacity]: "壁纸透明度",
+	[Key.overlayBlur]: "背景模糊度",
+	[Key.overlayCardOpacity]: "卡片透明度",
 
 	// 文章布局
 	[Key.postListLayout]: "文章布局",
@@ -270,8 +285,8 @@ export const zh_CN: Translation = {
 	[Key.scanToRead]: "扫码阅读文章",
 
 	// 代码块折叠配置
-	[Key.codeCollapsibleShowMore]: "显示更多",
-	[Key.codeCollapsibleShowLess]: "显示更少",
+	[Key.codeCollapsibleShowMore]: "展开",
+	[Key.codeCollapsibleShowLess]: "收起",
 	[Key.codeCollapsibleExpanded]: "代码块已展开",
 	[Key.codeCollapsibleCollapsed]: "代码块已折叠",
 
